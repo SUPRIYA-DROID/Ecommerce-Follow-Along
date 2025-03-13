@@ -27,24 +27,26 @@ function Navbar() {
   };
 
   return (
-    <div className="h-16 fixed top-0 left-0 right-0 z-1 w-full bg-red-900 text-white flex items-center justify-between px-6 shadow-lg">
-      <h1 className="text-2xl font-semibold tracking-wide">
-        Supriya <span>Madness</span>
+    <div className="h-16 fixed top-0 left-0 right-0 z-10 w-full bg-pink-100 text-rose-900 flex items-center justify-between px-8 shadow-md">
+      <h1 className="text-3xl font-bold tracking-wide">
+        Sup's <span className="text-rose-500">Chaos.</span>
       </h1>
 
-      <div className="space-x-4">
+      <div className="space-x-4 flex items-center">
         {user ? (
           <>
-              <span className="text-lg font-medium">Welcome <span className='text-yellow-300'>{user.name}</span> !</span>
+            <span className="text-lg font-medium">
+              Welcome, <span className="text-rose-600 font-semibold">{user.name}</span>!
+            </span>
             <button
-              onClick={() => navigate('/products')} // ✅ Show Product button after login
-              className="bg-green-600 text-white px-5 py-2 rounded-lg shadow-md transition duration-300 hover:bg-green-700"
+              onClick={() => navigate('/products')}
+              className="bg-rose-500 text-white px-5 py-2 rounded-full shadow-md transition-transform duration-300 hover:bg-rose-600 hover:scale-105"
             >
               Add Products
             </button>
             <button
               onClick={handleLogout}
-              className="bg-red-600 text-white px-5 py-2 rounded-lg shadow-md transition duration-300 hover:bg-red-700"
+              className="bg-red-400 text-white px-5 py-2 rounded-full shadow-md transition-transform duration-300 hover:bg-red-500 hover:scale-105"
             >
               Logout
             </button>
@@ -53,13 +55,13 @@ function Navbar() {
           <>
             <button
               onClick={() => navigate('/signup')}
-              className="bg-white text-blue-900 px-5 py-2 rounded-lg shadow-md transition duration-300 hover:bg-gray-200"
+              className="bg-white text-rose-700 border border-rose-300 px-5 py-2 rounded-full shadow-sm transition-transform duration-300 hover:bg-rose-50 hover:scale-105"
             >
               Signup
             </button>
             <button
               onClick={() => navigate('/login')}
-              className="bg-blue-600 text-white px-5 py-2 rounded-lg shadow-md transition duration-300 hover:bg-blue-700"
+              className="bg-rose-600 text-white px-5 py-2 rounded-full shadow-md transition-transform duration-300 hover:bg-rose-700 hover:scale-105"
             >
               Login
             </button>
