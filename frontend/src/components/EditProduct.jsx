@@ -22,7 +22,6 @@ const EditProduct = () => {
                 console.error("Error fetching product:", error);
             });
     }, [id]);
-    
 
     // Handle input changes
     const handleChange = (e) => {
@@ -42,38 +41,53 @@ const EditProduct = () => {
     };
 
     return (
-        <div className="flex items-center justify-center min-h-screen bg-gray-700">
-            <div className="p-8 bg-white rounded-lg shadow-lg w-96">
-                <h2 className="text-2xl font-bold text-center mb-6">Edit Product</h2>
-                <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-                    <input
-                        type="text"
-                        name="name"
-                        value={product.name}
-                        onChange={handleChange}
-                        placeholder="Product Name"
-                        className="p-2 border rounded"
-                        required
-                    />
-                    <input
-                        type="number"
-                        name="price"
-                        value={product.price}
-                        onChange={handleChange}
-                        placeholder="Price"
-                        className="p-2 border rounded"
-                        required
-                    />
-                    <textarea
-                        name="description"
-                        value={product.description}
-                        onChange={handleChange}
-                        placeholder="Description"
-                        className="p-2 border rounded"
-                    />
+        <div className="flex items-center justify-center min-h-screen bg-pink-50 p-6">
+            <div className="bg-white p-8 rounded-3xl shadow-lg w-full max-w-lg border border-rose-200">
+                <h2 className="text-3xl font-bold text-center text-rose-600 mb-8 underline underline-offset-4">
+                    Edit Product ✨
+                </h2>
+                <form onSubmit={handleSubmit} className="space-y-6">
+                    <div>
+                        <label className="block text-gray-700 mb-2 font-medium">Product Name</label>
+                        <input
+                            type="text"
+                            name="name"
+                            value={product.name}
+                            onChange={handleChange}
+                            placeholder="Enter product name"
+                            className="w-full p-3 border border-rose-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-400 bg-pink-50"
+                            required
+                        />
+                    </div>
+
+                    <div>
+                        <label className="block text-gray-700 mb-2 font-medium">Price (₹)</label>
+                        <input
+                            type="number"
+                            name="price"
+                            value={product.price}
+                            onChange={handleChange}
+                            placeholder="Enter price"
+                            className="w-full p-3 border border-rose-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-400 bg-pink-50"
+                            required
+                        />
+                    </div>
+
+                    <div>
+                        <label className="block text-gray-700 mb-2 font-medium">Description</label>
+                        <textarea
+                            name="description"
+                            value={product.description}
+                            onChange={handleChange}
+                            placeholder="Write a short description..."
+                            rows="4"
+                            className="w-full p-3 border border-rose-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-400 bg-pink-50"
+                        />
+                    </div>
+
                     <button
                         type="submit"
-                        className="px-4 py-2 bg-blue-500 text-white rounded-lg"
+                        className="w-full bg-rose-500 text-white py-3 rounded-xl hover:bg-rose-600 transition-all font-semibold"
                     >
                         Update Product
                     </button>

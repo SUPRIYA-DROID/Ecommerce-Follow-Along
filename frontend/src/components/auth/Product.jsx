@@ -33,24 +33,29 @@ const Product = () => {
 
     return (
         <div className="flex justify-center items-center w-full">
-            <div className="min-h-screen w-full mt-20 bg-red-400 flex flex-col items-center p-5">
-                <h1 className="text-4xl md:text-5xl font-bold text-center text-white mb-10">
-                    Our Products
+            <div className="min-h-screen w-full mt-24 bg-pink-100 flex flex-col items-center p-6">
+                <h1 className="text-4xl md:text-5xl font-extrabold text-center text-rose-600 mb-10">
+                    Our Lovely Products 🌸
                 </h1>
-                <div className="grid  grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 w-full">
-                    {products.map((product) => (
-                        <Card
-                            key={product._id}
-                            name={product.name}
-                            price={product.price}
-                            image={`http://localhost:8000/uploads/${product.images?.[0]}`}
-                            onAddToCart={() => console.log("Added to cart:", product.name)}
-                            onBuyNow={() => console.log("Buying:", product.name)}
-                            onEdit={() => navigate(`/edit-product/${product._id}`)}
-                            onDelete={() => handleDelete(product._id)}
-                        />
-                    ))}
-                </div>
+
+                {products.length === 0 ? (
+                    <p className="text-gray-600 text-lg">No products found.</p>
+                ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 w-full max-w-7xl">
+                        {products.map((product) => (
+                            <Card
+                                key={product._id}
+                                name={product.name}
+                                price={product.price}
+                                image={`http://localhost:8000/uploads/${product.images?.[0]}`}
+                                onAddToCart={() => console.log("Added to cart:", product.name)}
+                                onBuyNow={() => console.log("Buying:", product.name)}
+                                onEdit={() => navigate(`/edit-product/${product._id}`)}
+                                onDelete={() => handleDelete(product._id)}
+                            />
+                        ))}
+                    </div>
+                )}
             </div>
         </div>
     );
