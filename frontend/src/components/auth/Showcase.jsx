@@ -1,10 +1,10 @@
 function Showcase() {
   return (
-    <div className="bg-gray-700 flex justify-center items-center py-6">
+    <div className="bg-gray-700 flex justify-center items-center py-9">
       <img
-        src="https://i.pinimg.com/736x/dc/b4/b2/dcb4b2b8645578507926fc523abce4b1.jpg"
+        src="https://relay-bl-in-records.sgp1.cdn.digitaloceanspaces.com/GameNation/AdAsset_101"
         alt="Showcase"
-        className="w-[95%] max-w-4xl rounded-lg shadow-lg transition-transform duration-300 hover:scale-105"
+        className="w-full max-w-6xl rounded-lg shadow-lg transition-transform duration-300 hover:scale-105"
       />
     </div>
   );
