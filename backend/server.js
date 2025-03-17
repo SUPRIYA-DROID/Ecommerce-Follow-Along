@@ -27,12 +27,14 @@ app.use(bodyParser.urlencoded({ extended: true, limit: "50mb" }));
 
 // ✅ CORS Setup (Include Authorization header)
 const allowedOrigins = ["http://localhost:5173", "http://localhost:3000"];
-app.use(cors({
-    origin: allowedOrigins,
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true,
-}));
+app.use(
+    cors({
+        origin: allowedOrigins,
+        methods: ["GET", "POST", "PUT", "DELETE"],
+        allowedHeaders: ["Content-Type", "Authorization"],
+        credentials: true,
+    })
+);
 
 // ✅ Serve static files
 app.use("/uploads", express.static("uploads"));
@@ -40,9 +42,11 @@ app.use("/uploads", express.static("uploads"));
 // ✅ Import and use routes
 const userRoutes = require("./User/userRouter");
 const productRoutes = require("./Products/productRouter");
+const cartRoutes = require("./cart/cartRouter"); // ✅ Import cart router
 
 app.use("/user", userRoutes);
 app.use("/products", productRoutes);
+app.use("/cart", cartRoutes); // ✅ Register cart routes
 
 // ✅ Error Handling Middleware
 app.use(ErrorHandler);
@@ -61,4 +65,11 @@ process.on("uncaughtException", (err) => {
     console.error(`Error: ${err.message}`);
     console.log("Shutting down due to an uncaught exception...");
     process.exit(1);
+});
+
+// ✅ Handle unhandled promise rejections
+process.on("unhandledRejection", (err) => {
+    console.error(`Unhandled Rejection: ${err.message}`);
+    console.log("Shutting down due to an unhandled promise rejection...");
+    server.close(() => process.exit(1));
 });

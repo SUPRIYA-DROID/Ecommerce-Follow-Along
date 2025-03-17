@@ -1,20 +1,21 @@
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import { Menu, X } from 'lucide-react';
 
-function Navbar() {
+function Navbar({ hideButtons = false }) {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
+  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
-
     if (storedUser && storedUser !== "undefined") {
       try {
         const parsedUser = JSON.parse(storedUser);
-        setUser(parsedUser);  // ✅ Set user state
+        setUser(parsedUser);
       } catch (error) {
         console.error("Error parsing user data:", error);
-        localStorage.removeItem("user"); // Remove corrupted data
+        localStorage.removeItem("user");
       }
     }
   }, []);
@@ -26,49 +27,147 @@ function Navbar() {
     navigate("/");
   };
 
-  return (
-    <div className="h-16 fixed top-0 left-0 right-0 z-10 w-full bg-pink-100 text-rose-900 flex items-center justify-between px-8 shadow-md">
-      <h1 className="text-3xl font-bold tracking-wide">
-        Sup's <span className="text-rose-500">Chaos.</span>
-      </h1>
+  const toggleMenu = () => setIsOpen(!isOpen);
 
-      <div className="space-x-4 flex items-center">
-        {user ? (
-          <>
-            <span className="text-lg font-medium">
-              Welcome, <span className="text-rose-600 font-semibold">{user.name}</span>!
-            </span>
-            <button
-              onClick={() => navigate('/products')}
-              className="bg-rose-500 text-white px-5 py-2 rounded-full shadow-md transition-transform duration-300 hover:bg-rose-600 hover:scale-105"
-            >
-              Add Products
+  function capitalize(name) {
+    if (typeof name !== 'string') {
+      return '';
+    }
+    return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+  }
+  
+
+  return (
+    <nav className="h-16 fixed top-0 left-0 right-0 z-10 w-full bg-gray-900 text-white shadow-lg">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-full">
+        {/* Logo */}
+        <div className="flex items-center">
+          <h1
+            onClick={() => navigate('/')}
+            className="text-3xl font-bold cursor-pointer tracking-wide"
+          >
+            Game <span className="text-yellow-300">Universe</span>
+          </h1>
+        </div>
+
+        {/* Desktop Menu */}
+        <div className="hidden md:flex space-x-6 items-center">
+          <button onClick={() => navigate('/')} className=" text-2xl font-semibold hover:text-yellow-300 transition">
+            Home
+          </button>
+
+          {/* Add Product Button (conditionally hidden) */}
+          {!hideButtons && (
+            <button onClick={() => navigate('/products')} className="text-2xl font-semibold hover:text-yellow-300 transition">
+              Add Product
             </button>
-            <button
-              onClick={handleLogout}
-              className="bg-red-400 text-white px-5 py-2 rounded-full shadow-md transition-transform duration-300 hover:bg-red-500 hover:scale-105"
-            >
-              Logout
-            </button>
-          </>
-        ) : (
-          <>
-            <button
-              onClick={() => navigate('/signup')}
-              className="bg-white text-rose-700 border border-rose-300 px-5 py-2 rounded-full shadow-sm transition-transform duration-300 hover:bg-rose-50 hover:scale-105"
-            >
-              Signup
-            </button>
-            <button
-              onClick={() => navigate('/login')}
-              className="bg-rose-600 text-white px-5 py-2 rounded-full shadow-md transition-transform duration-300 hover:bg-rose-700 hover:scale-105"
-            >
-              Login
-            </button>
-          </>
-        )}
+          )}
+
+          {user ? (
+            <>
+              <span className="text-2xl font-semibold">
+                Welcome, <span className="font-semibold text-yellow-300">{capitalize(user.name)}</span>
+              </span>
+
+              <button
+                onClick={handleLogout}
+                className="bg-red-600 px-4 py-2 rounded-lg hover:bg-red-700 transition"
+              >
+                Logout
+              </button>
+
+              {/* Cart Button AFTER Logout */}
+              {!hideButtons && (
+                <button onClick={() => navigate('/cart')}>
+                  <img
+                    width="40"
+                    height="40"
+                    className="invert cursor-pointer"
+                    src="https://img.icons8.com/material-rounded/48/shopping-basket-add.png"
+                    alt="shopping-basket-add"
+                  />
+                </button>
+              )}
+            </>
+          ) : (
+            <>
+              <button
+                onClick={() => navigate('/signup')}
+                className="bg-blue-600  font-semibold px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+              >
+                Signup
+              </button>
+              <button
+                onClick={() => navigate('/login')}
+                className="bg-green-600 font-semibold px-4 py-2 rounded-lg hover:bg-green-700 transition"
+              >
+                Login
+              </button>
+            </>
+          )}
+        </div>
+
+        {/* Mobile Menu Button */}
+        <div className="md:hidden flex items-center">
+          <button onClick={toggleMenu} className="text-white">
+            {isOpen ? <X size={28} /> : <Menu size={28} />}
+          </button>
+        </div>
       </div>
-    </div>
+
+      {/* Mobile Menu */}
+      {isOpen && (
+        <div className="md:hidden bg-gray-800 absolute top-16 left-0 w-full py-4 shadow-lg">
+          <div className="flex flex-col space-y-4 items-center">
+            <button onClick={() => navigate('/')} className="hover:text-yellow-300 transition">
+              Home
+            </button>
+
+            {!hideButtons && (
+              <button onClick={() => navigate('/add-product')} className="hover:text-yellow-300 transition">
+                Add Product
+              </button>
+            )}
+
+            {user ? (
+              <>
+                <span className="text-lg">
+                  Welcome, <span className="text-yellow-300">{user.name}</span>
+                </span>
+                <button
+                  onClick={handleLogout}
+                  className="bg-red-600 px-4 py-2 rounded-lg hover:bg-red-700 transition"
+                >
+                  Logout
+                </button>
+
+                {/* Cart Button AFTER Logout */}
+                {!hideButtons && (
+                  <button onClick={() => navigate('/cart')} className="hover:text-yellow-300 transition">
+                    Cart
+                  </button>
+                )}
+              </>
+            ) : (
+              <>
+                <button
+                  onClick={() => navigate('/signup')}
+                  className="bg-blue-600 px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+                >
+                  Signup
+                </button>
+                <button
+                  onClick={() => navigate('/login')}
+                  className="bg-green-600 px-4 py-2 rounded-lg hover:bg-green-700 transition"
+                >
+                  Login
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+    </nav>
   );
 }
 
