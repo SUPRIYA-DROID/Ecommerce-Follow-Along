@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import loginImage from "../../assets/Online games addiction-cuate.svg"; // Add your image here
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -23,9 +24,9 @@ const Login = () => {
       const { token, user } = response.data;
 
       if (user) {
-        localStorage.setItem("user", JSON.stringify(user));  // ✅ Store user details
+        localStorage.setItem("user", JSON.stringify(user)); // ✅ Store user details
       }
-      localStorage.setItem("token", token);  // ✅ Store token
+      localStorage.setItem("token", token); // ✅ Store token
 
       navigate("/");
     } catch (err) {
@@ -34,54 +35,83 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-pink-100 flex flex-col items-center justify-center px-4">
-      <div className="w-full max-w-md bg-white p-8 rounded-2xl shadow-xl">
-        <h2 className="text-3xl font-extrabold text-center text-rose-600 mb-6">
-          Welcome Back 💖
-        </h2>
-
-        {error && (
-          <p className="text-red-500 text-center mb-4 font-medium">
-            {error}
-          </p>
-        )}
-
-        <form className="space-y-5" onSubmit={handleSubmit}>
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full p-3 border border-rose-300 rounded-full focus:outline-none focus:ring-2 focus:ring-rose-400 transition"
-            required
+    <div className="min-h-screen bg-gray-700 flex items-center justify-center">
+      <div className="flex bg-white shadow-lg rounded-lg overflow-hidden max-w-4xl w-full">
+        {/* Image Section */}
+        <div className="hidden md:block w-1/2 bg-blue-100">
+          <img
+            src={loginImage}
+            alt="Login"
+            className="w-full h-full object-cover"
           />
+        </div>
 
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full p-3 border border-rose-300 rounded-full focus:outline-none focus:ring-2 focus:ring-rose-400 transition"
-            required
-          />
-
-          <button
-            type="submit"
-            className="w-full bg-rose-500 text-white py-3 rounded-full shadow-md transition-transform duration-300 hover:bg-rose-600 hover:scale-105"
-          >
+        {/* Form Section */}
+        <div className="w-full md:w-1/2 p-8">
+          <h2 className="text-2xl font-bold text-center mb-6 text-gray-700">
             Login
-          </button>
-        </form>
+          </h2>
 
-        <p className="text-center mt-6 text-gray-600">
-          Dont have an account?{" "}
-          <Link
-            to="/signup"
-            className="text-rose-600 font-semibold hover:underline"
-          >
-            Sign Up
-          </Link>
-        </p>
+          {error && (
+            <p className="text-red-500 text-center mb-4">{error}</p>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Email */}
+            <div>
+              <label
+                htmlFor="email"
+                className="block text-gray-700 font-medium mb-1"
+              >
+                Email
+              </label>
+              <input
+                id="email"
+                type="email"
+                placeholder="Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full p-2 border rounded focus:outline-blue-500"
+                required
+              />
+            </div>
+
+            {/* Password */}
+            <div>
+              <label
+                htmlFor="password"
+                className="block text-gray-700 font-medium mb-1"
+              >
+                Password
+              </label>
+              <input
+                id="password"
+                type="password"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full p-2 border rounded focus:outline-blue-500"
+                required
+              />
+            </div>
+
+            {/* Submit Button */}
+            <button
+              type="submit"
+              className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition"
+            >
+              Login
+            </button>
+          </form>
+
+          {/* Signup Link */}
+          <p className="text-center mt-4 text-gray-600">
+            Don’t have an account?{" "}
+            <Link to="/signup" className="text-blue-600 hover:underline">
+              Sign Up
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   );

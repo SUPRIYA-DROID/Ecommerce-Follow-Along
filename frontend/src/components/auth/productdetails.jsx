@@ -8,55 +8,84 @@ const ProductDetails = () => {
     const [product, setProduct] = useState(null);
     const [otherProducts, setOtherProducts] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [quantity, setQuantity] = useState(1); // ✅ Quantity state
+    const [quantity, setQuantity] = useState(1);
     const navigate = useNavigate();
 
     useEffect(() => {
         const fetchProductDetails = async () => {
             try {
                 setLoading(true);
+                
+                // Get the token from localStorage
                 const token = localStorage.getItem("token");
+    
+                if (!token) {
+                    console.error("No token found! Redirecting to login.");
+                    navigate("/login"); // Redirect to login if token is missing
+                    return;
+                }
+    
+                // Debug: Check if the token exists
+                console.log("Token:", token);
+    
+                // Make the API request with authorization headers
                 const response = await axios.get(`http://localhost:8000/products/${id}`, {
                     headers: {
-                        Authorization: `Bearer ${token}`,
+                        Authorization: `Bearer ${token}`, // Ensure correct format
                     },
                 });
+    
                 setProduct(response.data);
             } catch (error) {
-                console.error("❌ Error fetching product details:", error);
+                console.error("Error fetching product details:", error);
+    
+                // If token is invalid/expired, redirect to login
+                if (error.response && error.response.status === 403) {
+                    console.error("Invalid token! Redirecting to login.");
+                    localStorage.removeItem("token"); // Remove invalid token
+                    navigate("/login");
+                }
             } finally {
                 setLoading(false);
             }
         };
-
-        const fetchOtherProducts = async () => {
-            try {
-                const response = await axios.get("http://localhost:8000/products");
-                const filteredProducts = response.data
-                    .filter((p) => p._id !== id)
-                    .slice(0, 5);
-                setOtherProducts(filteredProducts);
-            } catch (error) {
-                console.error("❌ Error fetching other products:", error);
-            }
-        };
-
+    
         if (id) {
             fetchProductDetails();
-            fetchOtherProducts();
         }
-    }, [id]);
+    }, [id, navigate]);
+    
 
-    const handleAddToCart = () => {
+    const handleAddToCart = async () => {
         if (product && quantity > 0) {
-            console.log(`✅ Added to cart: ${quantity} x ${product.name}`);
-            // Optionally send request to add to cart with quantity
+            try {
+                const token = localStorage.getItem("token");
+                const response = await axios.post(
+                    "http://localhost:8000/cart",
+                    {
+                        productId: product._id,
+                        quantity,
+                    },
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    }
+                );
+                console.log("Product added to cart!");
+
+                // ✅ Optionally update cart state
+                console.log("Updated cart:", response.data);
+            } catch (error) {
+                console.error("Error adding to cart:", error);
+                console.log("Failed to add product to cart. Please try again.");
+            }
         }
     };
 
     const handleBuyNow = () => {
         if (product && quantity > 0) {
-            console.log(`✅ Buying ${quantity} x ${product.name}`);
+            console.log(`Buying ${quantity} x ${product.name}`);
             // Optionally send request to handle purchase with quantity
         }
     };
@@ -67,12 +96,17 @@ const ProductDetails = () => {
         return <p className="text-center text-red-500">Product not found</p>;
     }
 
+    const handleGoToCart = () => {
+        navigate('/cart');
+    };
+
+
     return (
         <div className="min-h-screen w-full bg-gray-800 text-white">
             <Navbar hideButtons={true} />
 
             {/* Product Details Section */}
-            <div className="max-w-6xl mx-auto pt-20">
+            <div className="max-w-6xl mx-auto pt-30">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {/* Product Image */}
                     <div className="w-full h-[400px] flex justify-center items-center rounded-lg">
@@ -109,9 +143,9 @@ const ProductDetails = () => {
                                 {product.description || "No description available."}
                             </p>
 
-                            {/* ✅ Quantity Input */}
+                            {/* Quantity Input */}
                             <div className="flex items-center bg-gray-600 p-2 pl-3 rounded-[10px] w-50 gap-4 mb-4">
-                                <label className="text-[1.3rem] font-semibold ">Quantity:</label>
+                                <label className="text-[1.3rem] font-semibold">Quantity:</label>
                                 <input
                                     type="number"
                                     value={quantity}
@@ -125,14 +159,20 @@ const ProductDetails = () => {
                         {/* Action Buttons */}
                         <div className="flex gap-4 mt-6">
                             <button
+                                onClick={handleGoToCart}
+                                className=" bg-blue-500 cursor-pointer hover:invert text-white text-2xl px-2 rounded-md transition-all focus:outline-none shadow-lg"
+                            >
+                                <img className="h-10" src="https://www.svgrepo.com/show/521847/shopping-cart.svg" alt="cart" />
+                            </button>
+                            <button
                                 onClick={handleAddToCart}
-                                className="flex-1 bg-blue-500 cursor-pointer hover:bg-blue-600 text-white text-2xl py-3 rounded-md transition-all focus:outline-none shadow-lg"
+                                className="flex-1 bg-blue-500 cursor-pointer hover:bg-blue-600 text-white text-2xl px-3 rounded-md transition-all focus:outline-none shadow-lg"
                             >
                                 Add to Cart
                             </button>
                             <button
                                 onClick={handleBuyNow}
-                                className="flex-1 bg-green-500 cursor-pointer hover:bg-green-600 text-white text-2xl py-3 rounded-md transition-all focus:outline-none shadow-lg"
+                                className="flex-1 bg-green-500 cursor-pointer hover:bg-green-600 text-white text-2xl p-3 rounded-md transition-all focus:outline-none shadow-lg"
                             >
                                 Buy Now
                             </button>
@@ -165,14 +205,6 @@ const ProductDetails = () => {
                                 </div>
                                 <h3 className="text-lg font-semibold mt-2">{product.name}</h3>
                                 <p className="text-green-400 mt-1">${product.price}</p>
-                                <div className="flex items-center gap-1 mt-1">
-                                    {Array.from({ length: 5 }, (_, i) => (
-                                        <span key={i} className={i < (product.rating || 0) ? "text-yellow-400" : "text-gray-400"}>
-                                            ★
-                                        </span>
-                                    ))}
-                                    <span className="text-gray-400 ml-2">({product.rating || 0})</span>
-                                </div>
                             </div>
                         ))}
                     </div>
