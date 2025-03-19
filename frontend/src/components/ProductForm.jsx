@@ -1,12 +1,14 @@
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import Navbar from "./Navbar";
 
 const ProductForm = () => {
     const navigate = useNavigate();
     const [productData, setProductData] = useState({
         name: "",
         price: "",
+        description: "", // ✅ Added description
         images: [],
         imagePreviews: [],
     });
@@ -32,100 +34,85 @@ const ProductForm = () => {
         const formData = new FormData();
         formData.append("name", productData.name);
         formData.append("price", productData.price);
+        formData.append("description", productData.description); // ✅ Added description
         productData.images.forEach((image) => formData.append("images", image));
 
         try {
             const token = localStorage.getItem("token");
-
             if (!token) {
-                console.error("No token found in localStorage!");
                 alert("You must be logged in to add a product.");
                 return;
             }
 
-            console.log("Sending token:", token);
-
             await axios.post("http://localhost:8000/products/add", formData, {
                 headers: {
                     "Content-Type": "multipart/form-data",
-                    "Authorization": `Bearer ${token}`,
+                    Authorization: `Bearer ${token}`,
                 },
             });
 
-            console.log("Product added successfully!");
             navigate("/");
         } catch (error) {
-            console.error("Error adding product:", error.response ? error.response.data : error.message);
-            alert("Failed to add product. Make sure you're logged in!");
+            console.error("Error adding product:", error);
+            alert("Failed to add product!");
         }
     };
 
     return (
-        <div className="flex items-center justify-center min-h-screen w-screen bg-pink-50">
-            <div className="p-8 max-w-lg w-full mx-auto bg-white shadow-xl rounded-3xl border border-rose-200">
-                <h2 className="text-3xl font-extrabold text-gray-800 mb-6 text-center">Add New Product</h2>
-                <form onSubmit={handleSubmit} className="space-y-5">
-
+        <div className="flex items-center justify-center h-screen w-screen">
+            <Navbar hideButtons={true} />
+            <div className="p-6 max-w-lg mx-auto bg-gray-200 shadow-xl rounded-lg">
+                <h2 className="text-3xl font-extrabold text-gray-800 mb-6 text-center">
+                    Add New Product
+                </h2>
+                <form onSubmit={handleSubmit} className="space-y-4">
                     {/* Product Name */}
-                    <div>
-                        <label className="block text-gray-700 font-semibold mb-2">Product Name:</label>
-                        <input
-                            type="text"
-                            name="name"
-                            value={productData.name}
-                            onChange={handleInputChange}
-                            placeholder="Enter product name"
-                            className="w-full p-3 border border-rose-300 rounded-xl bg-pink-50 focus:ring-2 focus:ring-rose-400 focus:outline-none"
-                            required
-                        />
-                    </div>
+                    <input
+                        type="text"
+                        name="name"
+                        value={productData.name}
+                        onChange={handleInputChange}
+                        placeholder="Product Name"
+                        className="w-full p-3 border border-gray-300 rounded-lg"
+                        required
+                    />
 
                     {/* Price */}
-                    <div>
-                        <label className="block text-gray-700 font-semibold mb-2">Price (₹):</label>
-                        <input
-                            type="number"
-                            name="price"
-                            value={productData.price}
-                            onChange={handleInputChange}
-                            placeholder="Enter price"
-                            className="w-full p-3 border border-rose-300 rounded-xl bg-pink-50 focus:ring-2 focus:ring-rose-400 focus:outline-none"
-                            required
-                        />
-                    </div>
+                    <input
+                        type="number"
+                        name="price"
+                        value={productData.price}
+                        onChange={handleInputChange}
+                        placeholder="Price ($)"
+                        className="w-full p-3 border border-gray-300 rounded-lg"
+                        required
+                    />
 
-                    {/* Image Previews */}
-                    {productData.imagePreviews.length > 0 && (
-                        <div className="mt-4 grid grid-cols-3 gap-3">
-                            {productData.imagePreviews.map((src, index) => (
-                                <img
-                                    key={index}
-                                    src={src}
-                                    alt={`preview-${index}`}
-                                    className="w-full h-24 object-cover rounded-xl border border-rose-300"
-                                />
-                            ))}
-                        </div>
-                    )}
+                    {/* ➕ Description */}
+                    <textarea
+                        name="description"
+                        value={productData.description}
+                        onChange={handleInputChange}
+                        placeholder="Product Description"
+                        className="w-full p-3 border border-gray-300 rounded-lg"
+                        required
+                    ></textarea>
 
-                    {/* Upload Images */}
-                    <div>
-                        <label className="block text-gray-700 font-semibold mb-2">Upload Images:</label>
-                        <input
-                            type="file"
-                            multiple
-                            accept="image/*"
-                            onChange={handleImageChange}
-                            className="w-full p-3 border border-rose-300 rounded-xl bg-pink-50 focus:ring-2 focus:ring-rose-400 focus:outline-none"
-                        />
-                    </div>
+                    {/* Image Upload */}
+                    <input
+                        type="file"
+                        multiple
+                        accept="image/*"
+                        onChange={handleImageChange}
+                        className="w-full p-3 border border-gray-300 rounded-lg"
+                    />
 
                     {/* Submit Button */}
                     <button
                         type="submit"
-                        className="w-full bg-gradient-to-r from-rose-500 to-pink-500 text-white py-3 rounded-xl shadow-md font-semibold text-lg transition-all duration-300 hover:from-rose-600 hover:to-pink-600"
+                        className="w-full bg-blue-500 text-white px-5 py-3 rounded-lg shadow-md"
                     >
-                        Add Product
+                        Submit
                     </button>
                 </form>
             </div>

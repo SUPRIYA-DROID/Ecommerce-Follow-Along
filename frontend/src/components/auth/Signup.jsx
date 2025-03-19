@@ -1,28 +1,43 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import gameImage from '../../assets/Select player-amico.svg';
 
 const Signup = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [gender, setGender] = useState([]);
+  const [address, setAddress] = useState("");
+  const [profilePic, setProfilePic] = useState(null);
   const [error, setError] = useState("");
   const navigate = useNavigate();
+
+  const handleCheckboxChange = (e) => {
+    const value = e.target.value;
+    setGender([value]); // Allow only one selection
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
 
+    const formData = new FormData();
+    formData.append("name", name);
+    formData.append("email", email);
+    formData.append("password", password);
+    formData.append("gender", gender[0] || "");
+    formData.append("address", address);
+    if (profilePic) formData.append("profilePic", profilePic);
+
     try {
-      const response = await axios.post("http://localhost:8000/user/signup", {
-        name,
-        email,
-        password,
+      const response = await axios.post("http://localhost:8000/user/signup", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
       });
 
       if (response.status === 201) {
-        console.log("Signup successful! Please login.");
-        navigate("/login"); // Redirect to login page
+        console.log("Signup successful!");
+        navigate("/login");
       }
     } catch (err) {
       setError(err.response?.data?.message || "Something went wrong.");
@@ -30,63 +45,129 @@ const Signup = () => {
   };
 
   return (
-    <div className="min-h-screen bg-pink-100 flex flex-col items-center justify-center px-4">
-      <div className="w-full max-w-md bg-white p-8 rounded-2xl shadow-xl">
-        <h2 className="text-3xl font-extrabold text-center text-rose-600 mb-6">
-          Create Account ✨
-        </h2>
+    <div className="min-h-screen bg-gray-700 flex items-center justify-center">
+      <div className="flex bg-white shadow-lg rounded-lg overflow-hidden max-w-4xl w-full">
+        {/* Image Section */}
+        <div className="hidden md:block w-1/2 bg-blue-100">
+          <img src={gameImage} alt="Game" className="w-full h-full object-cover" />
+        </div>
 
-        {error && (
-          <p className="text-red-500 text-center mb-4 font-medium">
-            {error}
+        {/* Form Section */}
+        <div className="w-full md:w-1/2 p-8">
+          <h2 className="text-2xl font-bold text-center mb-6 text-gray-700">Sign Up</h2>
+
+          {error && <p className="text-red-500 text-center mb-4">{error}</p>}
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label htmlFor="name" className="block text-gray-700 font-medium mb-1">
+                Full Name
+              </label>
+              <input
+                id="name"
+                type="text"
+                placeholder="Full Name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="w-full p-2 border rounded focus:outline-blue-500"
+                required
+              />
+            </div>
+
+            <div className="flex gap-4">
+              <div className="w-1/2">
+                <label htmlFor="email" className="block text-gray-700 font-medium mb-1">
+                  Email
+                </label>
+                <input
+                  id="email"
+                  type="email"
+                  placeholder="Email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full p-2 border rounded focus:outline-blue-500"
+                  required
+                />
+              </div>
+
+              <div className="w-1/2">
+                <label htmlFor="password" className="block text-gray-700 font-medium mb-1">
+                  Password
+                </label>
+                <input
+                  id="password"
+                  type="password"
+                  placeholder="Password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full p-2 border rounded focus:outline-blue-500"
+                  required
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-gray-700 font-medium mb-1">
+                Gender
+              </label>
+              <div className="flex gap-4">
+                {["Male", "Female", "Other"].map((option) => (
+                  <label key={option} className="flex items-center">
+                    <input
+                      type="checkbox"
+                      value={option}
+                      checked={gender.includes(option)}
+                      onChange={handleCheckboxChange}
+                      className="mr-2"
+                    />
+                    {option}
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <label htmlFor="address" className="block text-gray-700 font-medium mb-1">
+                Address
+              </label>
+              <input
+                id="address"
+                type="text"
+                placeholder="Address"
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                className="w-full p-2 border rounded focus:outline-blue-500"
+                required
+              />
+            </div>
+
+            <div>
+              <label htmlFor="profilePic" className="block text-gray-700 font-medium mb-1">
+                Profile Picture
+              </label>
+              <input
+                id="profilePic"
+                type="file"
+                onChange={(e) => setProfilePic(e.target.files[0])}
+                className="w-full p-2 border rounded focus:outline-blue-500"
+              />
+            </div>
+
+            <button
+              type="submit"
+              className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition"
+            >
+              Sign Up
+            </button>
+          </form>
+
+          <p className="text-center mt-4 text-gray-600">
+            Already have an account?{" "}
+            <Link to="/login" className="text-blue-600 hover:underline">
+              Sign In
+            </Link>
           </p>
-        )}
-
-        <form className="space-y-5" onSubmit={handleSubmit}>
-          <input
-            type="text"
-            placeholder="Full Name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="w-full p-3 border border-rose-300 rounded-full focus:outline-none focus:ring-2 focus:ring-rose-400 transition"
-            required
-          />
-
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full p-3 border border-rose-300 rounded-full focus:outline-none focus:ring-2 focus:ring-rose-400 transition"
-            required
-          />
-
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full p-3 border border-rose-300 rounded-full focus:outline-none focus:ring-2 focus:ring-rose-400 transition"
-            required
-          />
-
-          <button
-            type="submit"
-            className="w-full bg-rose-500 text-white py-3 rounded-full shadow-md transition-transform duration-300 hover:bg-rose-600 hover:scale-105"
-          >
-            Sign Up
-          </button>
-        </form>
-
-        <p className="text-center mt-6 text-gray-600">
-          Already have an account?{" "}
-          <Link
-            to="/login"
-            className="text-rose-600 font-semibold hover:underline"
-          >
-            Sign In
-          </Link>
-        </p>
+        </div>
       </div>
     </div>
   );
