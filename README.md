@@ -410,7 +410,7 @@ Add radio buttons for users to select between these payment methods.
 When the Online Payment option is selected, dynamically display the PayPal buttons.
 The PayPal buttons will be integrated in the next milestone.
 
-## Milestone 30: Online Payment Integration with PayPal API
+## Milestone 30:- Online Payment Integration with PayPal API
 
 Overview
 This repository contains the implementation of the online payment gateway using the PayPal API as part of Milestone 30 in the Full Stack Web Development course. The goal was to understand and integrate online payments into a web application using ReactJS.
